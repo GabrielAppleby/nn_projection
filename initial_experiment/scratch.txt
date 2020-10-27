@@ -1,0 +1,16 @@
+ for n_neighbors in [2, 4, 6, 8, 10]:
+        idxs = features[:, 0] == n_neighbors
+        test_features = features[idxs]
+        test_projections = projections[idxs]
+        test_labels = labels[idxs].reshape(-1)
+        preds = model.predict(test_features)
+
+        plt.title('UMAP n={}'.format(n_neighbors))
+        plt.scatter(test_projections[:, 0], test_projections[:, 1], c=test_labels)
+        plt.savefig('Umap n={}'.format(n_neighbors))
+        plt.clf()
+
+        plt.title('NN n={}'.format(n_neighbors))
+        plt.scatter(preds[:, 0], preds[:, 1], c=test_labels)
+        plt.savefig('NN n={}'.format(n_neighbors))
+        plt.clf()
