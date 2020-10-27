@@ -1,11 +1,13 @@
+import os
 from typing import Tuple, Iterable, List
 
 import numpy as np
-import umap
+from cuml.manifold.umap import UMAP as cuUMAP
 from sklearn.datasets import load_wine, fetch_openml
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import shuffle
 
+DATA_FOLDER: str = os.path.dirname(os.path.realpath(__file__))
 WINE_FILE_NAME: str = 'wine_umap.npz'
 DIGITS_FILE_NAME: str = 'digits_umap.npz'
 FASHION_FILE_NAME: str = 'fashion_umap.npz'
@@ -17,7 +19,7 @@ def load_dataset(dataset_name):
     :param filename: The properly formatted files' name.
     :return: The features, labels, and projection data.
     """
-    data = np.load(dataset_name, allow_pickle=True)
+    data = np.load(os.path.join(DATA_FOLDER, dataset_name), allow_pickle=True)
     features = data['features']
     labels = data['labels']
     projections = data['projections']
@@ -92,7 +94,7 @@ def create_projection_dataset(
     repreated_labels = []
     for num_neighbors in neighbors:
         projections.append(
-            normalize_data(umap.UMAP(n_neighbors=num_neighbors).fit_transform(features)))
+            normalize_data(cuUMAP(n_neighbors=num_neighbors).fit_transform(features)))
         augmented_features.append(np.concatenate(
             (np.full(shape=(features.shape[0], 1), fill_value=num_neighbors), features), axis=1))
         repreated_labels.append(labels)
