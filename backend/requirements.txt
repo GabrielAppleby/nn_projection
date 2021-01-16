@@ -1,0 +1,9 @@
+numpy
+werkzeug
+gunicorn
+python-dotenv
+Flask
+flask-restful
+psycopg2-binary
+Flask-SQLAlchemy
+Flask-Migrate
