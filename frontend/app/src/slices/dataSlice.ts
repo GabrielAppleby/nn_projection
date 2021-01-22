@@ -129,8 +129,7 @@ export const dataSlice = createSlice({
         builder.addCase(fetchData.fulfilled, (state, action) => {
             state.dataStatus = 'fulfilled'
             dataAdapter.removeAll(state);
-            const data = action.payload.slice(0, 100);
-            console.log(data);
+            const data = action.payload;
 
             dataAdapter.upsertMany(state, data)
         })
