@@ -6,7 +6,7 @@ export type Status = 'idle' | 'pending' | 'fulfilled' | 'rejected';
 export interface DataInstance {
     uid: number
     features: number[]
-    target: string
+    label: string
     projections?: number[]
 }
 

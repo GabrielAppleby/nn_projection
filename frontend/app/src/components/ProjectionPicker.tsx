@@ -1,5 +1,5 @@
 import React from "react";
-import {Select} from "@material-ui/core";
+import {Select, Typography} from "@material-ui/core";
 import {changeProjectionAndFetchModel, selectProjection} from "../slices/dataSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
@@ -27,18 +27,23 @@ const ProjectionPicker = (props: PropsFromRedux) => {
 
 
     return (
-        <Select
-            native
-            value={selected}
-            onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                changeSelection(event.target.value as Projection);
-            }}
-            inputProps={{
-                name: 'projection',
-                id: 'projection-native-simple',
-            }}>
-            <option value={'umap'}>umap</option>
-        </Select>
+        <>
+            <Typography id="projection-picker" gutterBottom>
+                Projection
+            </Typography>
+            <Select
+                native
+                value={selected}
+                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                    changeSelection(event.target.value as Projection);
+                }}
+                inputProps={{
+                    name: 'projection',
+                    id: 'projection-native-simple',
+                }}>
+                <option value={'umap'}>umap</option>
+            </Select>
+        </>
     );
 }
 

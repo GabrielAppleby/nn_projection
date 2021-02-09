@@ -35,13 +35,13 @@ interface D3RectSpec {
     readonly height: number;
 }
 
-// interface D3LegendSpec {
-//     readonly symbolX: number;
-//     readonly textX: number;
-//     readonly symbolStartY: number;
-//     readonly textStartY: number;
-//     readonly incrementY: number;
-// }
+interface D3LegendSpec {
+    readonly symbolX: number;
+    readonly textX: number;
+    readonly symbolStartY: number;
+    readonly textStartY: number;
+    readonly incrementY: number;
+}
 
 interface ExtremeValues {
     readonly minX: number;
@@ -52,7 +52,7 @@ interface ExtremeValues {
 
 const BUFFER_PROPORTION = 1 / 20;
 const MARGINS_PROPORTION = 1 / 40;
-// const LEGEND_PROPORTION = 1 / 6;
+const LEGEND_PROPORTION = 1 / 6;
 const CIRCLE_R = 2;
 
 
@@ -97,45 +97,45 @@ const removeAppendDefs = (rootG: RootSelection, {x, y, width, height}: D3RectSpe
         .attr("x", x)
         .attr("y", y);
 }
-//
-// const joinLegend = (rootG: RootSelection, labels: string[], {
-//     symbolX,
-//     textX,
-//     symbolStartY,
-//     textStartY,
-//     incrementY
-// }: D3LegendSpec) => {
-//     const legendCirclesG = rootG.select('#legendCirclesG');
-//     const legendTextG = rootG.select('#legendTextG');
-//
-//     legendCirclesG.selectAll('circle')
-//         .data(labels)
-//         .join("circle")
-//         .attr('r', 2 * CIRCLE_R)
-//         .style("stroke", "black")
-//         .style("stroke-width", .25)
-//         // @ts-ignore
-//         .style("fill", (label) => {
-//             return COLORS(String(label));
-//         })
-//         .attr('cx', function () {
-//             return symbolX;
-//         })
-//         .attr('cy', function (d: any, i: number) {
-//             return symbolStartY + (i * incrementY);
-//         })
-//
-//     legendTextG.selectAll('text')
-//         .data(labels)
-//         .join("text")
-//         .attr('x', function (d, i) {
-//             return textX;
-//         })
-//         .attr('y', function (d, i) {
-//             return textStartY + (i * incrementY);
-//         })
-//         .text((d) => d);
-// }
+
+const joinLegend = (rootG: RootSelection, labels: string[], {
+    symbolX,
+    textX,
+    symbolStartY,
+    textStartY,
+    incrementY
+}: D3LegendSpec) => {
+    const legendCirclesG = rootG.select('#legendCirclesG');
+    const legendTextG = rootG.select('#legendTextG');
+
+    legendCirclesG.selectAll('circle')
+        .data(labels)
+        .join("circle")
+        .attr('r', 2 * CIRCLE_R)
+        .style("stroke", "black")
+        .style("stroke-width", .25)
+        // @ts-ignore
+        .style("fill", (label) => {
+            return COLORS(String(label));
+        })
+        .attr('cx', function () {
+            return symbolX;
+        })
+        .attr('cy', function (d: any, i: number) {
+            return symbolStartY + (i * incrementY);
+        })
+
+    legendTextG.selectAll('text')
+        .data(labels)
+        .join("text")
+        .attr('x', function (d, i) {
+            return textX;
+        })
+        .attr('y', function (d, i) {
+            return textStartY + (i * incrementY);
+        })
+        .text((d) => d);
+}
 
 
 const callAxis = (rootG: RootSelection,
@@ -230,7 +230,7 @@ const joinCircles = (rootG: RootSelection,
         .style("stroke-width", .25)
         // @ts-ignore
         .style("fill", (d) => {
-            return COLORS(String(d.target));
+            return COLORS(String(d.label));
         });
 
     circlesG
@@ -263,12 +263,11 @@ const joinCircles = (rootG: RootSelection,
 const getCoordsAndSpecs = (dimensions: Dimensions, labelLength: number) => {
     const {width, height} = dimensions;
     const margins = {w: width * MARGINS_PROPORTION, h: height * MARGINS_PROPORTION};
-    // const legend_space = width * LEGEND_PROPORTION;
+    const legend_space = width * LEGEND_PROPORTION;
 
     const scatterCoords = {
         startX: margins.w,
-        endX: (width - margins.w),
-        // endX: (width - margins.w - legend_space),
+        endX: (width - margins.w - legend_space),
         startY: (height - margins.h),
         endY: margins.h
     }
@@ -276,20 +275,19 @@ const getCoordsAndSpecs = (dimensions: Dimensions, labelLength: number) => {
     const rectSpec = {
         x: margins.w,
         y: margins.h,
-        // width: (width - 2 * margins.w - legend_space),
-        width: (width - 2 * margins.w),
+        width: (width - 2 * margins.w - legend_space),
         height: (height - 2 * margins.h)
     }
 
-    // const legendSpec: D3LegendSpec = {
-    //     symbolX: width - (margins.w / 2) - legend_space,
-    //     textX: width - (margins.w / 2) - legend_space + 2 * CIRCLE_R,
-    //     symbolStartY: margins.h,
-    //     textStartY: margins.h + (2 * CIRCLE_R),
-    //     incrementY: ((labelLength / 2) * 8 * CIRCLE_R)
-    // }
+    const legendSpec: D3LegendSpec = {
+        symbolX: width - (margins.w / 2) - legend_space,
+        textX: width - (margins.w / 2) - legend_space + 3 * CIRCLE_R,
+        symbolStartY: margins.h,
+        textStartY: margins.h + (2 * CIRCLE_R),
+        incrementY: 10 * CIRCLE_R
+    }
 
-    return {scatterCoords, rectSpec}
+    return {scatterCoords, rectSpec, legendSpec}
 }
 
 const getExtrema = (data: ProjectedData) => {
@@ -319,15 +317,15 @@ const ScatterChart: React.FC<ProjectionChartProps> = (props) => {
     useEffect(() => {
         if (data !== undefined && d3Container.current !== null && isProjected(data)) {
             const extrema = getExtrema(data);
-            const labels = Array.from(new Set(data.map(d => d.target)));
+            const labels = Array.from(new Set(data.map(d => d.label))).sort();
 
-            const {scatterCoords, rectSpec} = getCoordsAndSpecs(dimensions, labels.length);
+            const {scatterCoords, rectSpec, legendSpec} = getCoordsAndSpecs(dimensions, labels.length);
             if (Object.values(extrema).every(o => o !== undefined)) {
                 // @ts-ignore
                 const scales: Scales = createScales(extrema, scatterCoords);
                 const rootG = d3.select(d3Container.current);
                 removeAppendDefs(rootG, rectSpec);
-                // joinLegend(rootG, labels, legendSpec);
+                joinLegend(rootG, labels, legendSpec);
                 callAxis(rootG, scales, scatterCoords);
                 removeAppendZoom(rootG, scales, scatterCoords, rectSpec);
                 joinCircles(rootG, data, scales)

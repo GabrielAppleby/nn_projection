@@ -10,7 +10,7 @@ import {getDatasetEndpoint} from "../api/common";
 interface DataState extends EntityState<DataInstance> {
     name: Dataset;
     projection: Projection;
-    scaling: number[];
+    hyperparam: number;
     model?: tf.LayersModel;
     dataStatus: Status;
     modelStatus: Status;
@@ -25,7 +25,7 @@ const dataAdapter = createEntityAdapter<DataInstance>({
 const initialState = dataAdapter.getInitialState({
     name: "mnist",
     projection: 'umap',
-    scaling: [25],
+    hyperparam: 5,
     dataStatus: 'idle',
     modelStatus: 'idle',
     projectionStatus: 'idle',
@@ -54,9 +54,9 @@ export const initApp = () => {
     }
 }
 
-export const updateScalingsAndProject = (scaling: number[]) => {
+export const updateHyperParamAndProject = (hyperparam: number) => {
     return (dispatch: AppDispatch) => {
-        dispatch(updateScaling(scaling))
+        dispatch(updateHyperParam(hyperparam))
         return dispatch(projectData())
     }
 }
@@ -86,10 +86,10 @@ export const projectData = createAsyncThunk<ProjectionChanges,
     }>('data/projectData', async (arg, thunkAPI) => {
     const state = thunkAPI.getState();
     const model = selectModel(state);
-    const scalings = selectDataScaling(state);
+    const hyperparam = selectProjectionHyperparam(state);
     if (model !== undefined) {
         const data = dataSelecters.selectAll(state);
-        const featureArray = data.map((d) => [...scalings, ...d.features]);
+        const featureArray = data.map((d) => [hyperparam, ...d.features]);
         const ids = data.map((d) => d.uid);
         const predictions = tf.tidy(() => {
             const features = tf.tensor(featureArray);
@@ -113,8 +113,8 @@ export const dataSlice = createSlice({
         changeProjection(state, action) {
             state.projection = action.payload;
         },
-        updateScaling(state, action) {
-            state.scaling = action.payload;
+        updateHyperParam(state, action) {
+            state.hyperparam = action.payload;
         },
         modelRemoved(state) {
             if (state.model !== undefined) {
@@ -161,7 +161,7 @@ export const dataSlice = createSlice({
     }
 });
 
-export const {updateScaling, modelRemoved, changeDataset, changeProjection} = dataSlice.actions;
+export const {updateHyperParam, modelRemoved, changeDataset, changeProjection} = dataSlice.actions;
 
 const dataSelecters = dataAdapter.getSelectors<RootState>(state => state.data);
 
@@ -169,8 +169,8 @@ export const selectAllData = (state: RootState) => {
     return dataSelecters.selectAll(state);
 }
 
-export const selectDataScaling = (state: RootState) => {
-    return state.data.scaling;
+export const selectProjectionHyperparam = (state: RootState) => {
+    return state.data.hyperparam;
 }
 
 export const selectDataset = (state: RootState) => {
@@ -183,17 +183,6 @@ export const selectProjection = (state: RootState) => {
 
 export const selectModel = (state: RootState) => {
     return state.data.model;
-}
-
-export const selectAllScaledData = (state: RootState) => {
-    const scaling = selectDataScaling(state);
-    return selectAllData(state).map(instance => {
-        return {
-            uid: instance.uid,
-            target: instance.target,
-            features: instance.features.map((v, i) => v * scaling[i])
-        }
-    })
 }
 
 export default dataSlice.reducer;
