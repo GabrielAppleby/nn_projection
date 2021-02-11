@@ -5,9 +5,7 @@ import {initApp, modelRemoved} from "./slices/dataSlice";
 import {DefaultAppBar} from "./components/DefaultAppBar";
 import {Grid} from "@material-ui/core";
 import ResponsiveScatterChart from "./components/charts/ScatterChart";
-import ResponsiveScatterPlotMatrixChart from "./components/charts/ScatterPlotMatrixChart";
-import ResponsiveParallelCoordinatesChart from "./components/charts/ParallelCoordinatesChart";
-import ScalingSliders from "./components/ScalingSliders";
+import HyperparamSlider from "./components/HyperparamSlider";
 import DatasetPicker from "./components/DatasetPicker";
 import ProjectionPicker from "./components/ProjectionPicker";
 
@@ -26,6 +24,8 @@ const useStyles = makeStyles({
         height: '80%'
     },
     bottomGridContainer: {
+        margin: 'auto',
+        textAlign: 'center',
         height: '20%'
     },
     controls: {
@@ -57,16 +57,10 @@ export const DefaultPanel: React.FC = (props) => {
                     <Grid item xs={12} md={12} className={classes.chartGridContainer}>
                         <ResponsiveScatterChart/>
                     </Grid>
-                    {/*<Grid item xs={12} md={6} className={classes.chartGridContainer}>*/}
-                    {/*    <ResponsiveScatterPlotMatrixChart/>*/}
-                    {/*</Grid>*/}
-                    {/*<Grid item xs={12} className={classes.chartGridContainer}>*/}
-                    {/*    <ResponsiveParallelCoordinatesChart/>*/}
-                    {/*</Grid>*/}
-                    <Grid item xs={12} sm={8} className={classes.bottomGridContainer}>
-                        <ScalingSliders/>
-                    </Grid>
-                    <Grid container item xs={12} sm={4}>
+                    <Grid container item xs={12} sm={4} className={classes.bottomGridContainer}>
+                        <Grid item xs={12} sm={4} className={classes.controls}>
+                            <HyperparamSlider/>
+                        </Grid>
                         <Grid item xs={12} sm={2} className={classes.controls}>
                             <DatasetPicker/>
                         </Grid>
