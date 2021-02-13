@@ -1,12 +1,12 @@
 import React, {useEffect, useRef} from "react";
 
 import * as d3 from 'd3';
-import {Data, ProjectedData, ProjectedDataInstance} from "../../types/data";
+import {Projections, ProjectedInstance} from "../../types/data";
 import {Dimensions, withDimensions} from "../../wrappers/Dimensions";
 import {RootState} from "../../app/store";
-import {selectAllData} from "../../slices/dataSlice";
-import {COLORS, isProjected} from "./common";
+import {COLORS} from "./common";
 import {connect} from "react-redux";
+import {selectAllProjections} from "../../slices/projectionSlice";
 
 // The version of d3 types is like two major versions behind the actual d3
 // version, so for the most part ignore typescript
@@ -58,7 +58,7 @@ const CIRCLE_R = 2;
 
 interface ProjectionChartProps {
     readonly dimensions: Dimensions;
-    readonly data: Data;
+    readonly data: Projections;
 }
 
 const createGroups = (rootG: RootSelection) => {
@@ -178,11 +178,11 @@ const removeAppendZoom = (rootG: RootSelection,
         circlesG
             .selectAll("circle")
             .attr('cx', function (d) {
-                const mol = d as ProjectedDataInstance
+                const mol = d as ProjectedInstance
                 return newXScale(mol.projections[0])
             })
             .attr('cy', function (d) {
-                const mol = d as ProjectedDataInstance
+                const mol = d as ProjectedInstance
                 return newYScale(mol.projections[1])
             });
     }
@@ -209,7 +209,7 @@ const removeAppendZoom = (rootG: RootSelection,
 }
 
 const joinCircles = (rootG: RootSelection,
-                     data: ProjectedData,
+                     data: Projections,
                      {xScale, yScale}: Scales) => {
     const circlesG = rootG.select('#circlesG');
 
@@ -290,7 +290,7 @@ const getCoordsAndSpecs = (dimensions: Dimensions, labelLength: number) => {
     return {scatterCoords, rectSpec, legendSpec}
 }
 
-const getExtrema = (data: ProjectedData) => {
+const getExtrema = (data: Projections) => {
     const minX = d3.min(data, d => d.projections[0]);
     const maxX = d3.max(data, d => d.projections[0]);
     const minY = d3.min(data, d => d.projections[1]);
@@ -315,7 +315,7 @@ const ScatterChart: React.FC<ProjectionChartProps> = (props) => {
 
 
     useEffect(() => {
-        if (data !== undefined && d3Container.current !== null && isProjected(data)) {
+        if (data !== undefined && d3Container.current !== null) {
             const extrema = getExtrema(data);
             const labels = Array.from(new Set(data.map(d => d.label))).sort();
 
@@ -342,7 +342,7 @@ const ScatterChart: React.FC<ProjectionChartProps> = (props) => {
 const ResponsiveScatterChart = withDimensions(ScatterChart);
 
 const mapStateToProps = (state: RootState) => ({
-    data: selectAllData(state),
+    data: selectAllProjections(state),
 });
 
 export default connect(

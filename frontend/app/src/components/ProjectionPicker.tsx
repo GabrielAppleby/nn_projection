@@ -1,9 +1,10 @@
 import React from "react";
 import {Select, Typography} from "@material-ui/core";
-import {changeProjectionAndFetchModel, selectProjection} from "../slices/dataSlice";
+import {selectProjection} from "../slices/projectionSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
 import {Projection} from "../types/data";
+import {changeProjectionAndFetchModel} from "../app/actions";
 
 const mapStateToProps = (state: RootState) => ({
     projection: selectProjection(state),

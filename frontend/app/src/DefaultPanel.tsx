@@ -1,13 +1,14 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {useDispatch} from "react-redux";
 import React, {useEffect} from "react";
-import {initApp, modelRemoved} from "./slices/dataSlice";
 import {DefaultAppBar} from "./components/DefaultAppBar";
 import {Grid} from "@material-ui/core";
 import ResponsiveScatterChart from "./components/charts/ScatterChart";
 import HyperparamSlider from "./components/HyperparamSlider";
 import DatasetPicker from "./components/DatasetPicker";
 import ProjectionPicker from "./components/ProjectionPicker";
+import {modelRemoved} from "./slices/modelSlice"
+import {initApp} from "./app/actions";
 
 
 const useStyles = makeStyles({

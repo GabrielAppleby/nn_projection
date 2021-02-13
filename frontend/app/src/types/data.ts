@@ -2,17 +2,18 @@ export type Dataset = 'mnist';
 export type Projection = 'umap'
 export type Status = 'idle' | 'pending' | 'fulfilled' | 'rejected';
 
-
-export interface DataInstance {
+export interface Instance {
     uid: number
-    features: number[]
     label: string
-    projections?: number[]
 }
 
-export interface ProjectedDataInstance extends DataInstance {
+export interface DataInstance extends Instance {
+    features: number[]
+}
+
+export interface ProjectedInstance extends Instance {
     projections: number[]
 }
 
 export type Data = DataInstance[]
-export type ProjectedData = ProjectedDataInstance[]
+export type Projections = ProjectedInstance[]

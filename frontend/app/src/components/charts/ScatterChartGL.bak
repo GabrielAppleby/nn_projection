@@ -1,0 +1,69 @@
+import React, {useEffect, useRef, useState} from "react";
+
+import {Data} from "../../types/data";
+import {Dimensions, withDimensions} from "../../wrappers/Dimensions";
+import {RootState} from "../../app/store";
+import {selectAllData} from "../../slices/dataSlice";
+import {isProjected} from "./common";
+import {connect} from "react-redux";
+import {Dataset, Point2D, PointMetadata, ScatterGL} from "scatter-gl";
+
+interface ProjectionChartProps {
+    readonly dimensions: Dimensions;
+    readonly data: Data;
+}
+
+const ScatterChart: React.FC<ProjectionChartProps> = (props) => {
+    const d3Container = useRef<HTMLDivElement>(null);
+    const [scatter, setScatter] = useState<null | ScatterGL>(null);
+    const data = props.data;
+    const dimensions = props.dimensions;
+
+
+    useEffect(() => {
+        if (d3Container.current !== null) {
+            setScatter(new ScatterGL(d3Container.current,
+                {showLabelsOnHover: false, selectEnabled: false, rotateOnStart: false}));
+        }
+    }, [setScatter]);
+
+
+    useEffect(() => {
+        if (data !== undefined && d3Container.current !== null && isProjected(data) && scatter !== null) {
+            const dataPoints: Point2D[] = [];
+            const metadata: PointMetadata[] = [];
+            data.forEach((projectedInstance, index) => {
+                dataPoints.push([projectedInstance.projections[0], projectedInstance.projections[1]]);
+                metadata.push({
+                    index,
+                    label: projectedInstance.label,
+                });
+            });
+            const dataset = new Dataset(dataPoints, metadata);
+            // scatter.setPointColorer({})
+            scatter.render(dataset);
+        }
+    }, [scatter, data]);
+
+    useEffect(() => {
+        if (scatter !== null)
+        {
+            scatter.resize();
+        }
+    }, [scatter, dimensions]);
+
+    return (
+        <div ref={d3Container} style={{height: dimensions.height, width: dimensions.width}}/>
+    )
+
+}
+
+const ResponsiveScatterChart = withDimensions(ScatterChart);
+
+const mapStateToProps = (state: RootState) => ({
+    data: selectAllData(state),
+});
+
+export default connect(
+    mapStateToProps,
+)(ResponsiveScatterChart);

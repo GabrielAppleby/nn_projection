@@ -1,11 +1,15 @@
 import {Action, configureStore, ThunkAction} from '@reduxjs/toolkit';
 import dataReducer from '../slices/dataSlice';
-import {TypedUseSelectorHook, useSelector} from "react-redux";
+import modelReducer from '../slices/modelSlice';
+import projectionReducer from '../slices/projectionSlice';
 
+import {TypedUseSelectorHook, useSelector} from "react-redux";
 
 export const store = configureStore({
     reducer: {
-        data: dataReducer
+        data: dataReducer,
+        model: modelReducer,
+        projection: projectionReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
