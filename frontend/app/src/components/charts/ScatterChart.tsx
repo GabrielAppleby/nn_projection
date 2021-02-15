@@ -1,10 +1,10 @@
 import React, {useEffect, useRef} from "react";
 
 import * as d3 from 'd3';
-import {Projections, ProjectedInstance} from "../../types/data";
+import {ProjectedInstance, Projections} from "../../types/data";
 import {Dimensions, withDimensions} from "../../wrappers/Dimensions";
 import {RootState} from "../../app/store";
-import {COLORS} from "./common";
+import {COLORS, ProjectionChartProps} from "./common";
 import {connect} from "react-redux";
 import {selectAllProjections} from "../../slices/projectionSlice";
 
@@ -55,11 +55,6 @@ const MARGINS_PROPORTION = 1 / 40;
 const LEGEND_PROPORTION = 1 / 6;
 const CIRCLE_R = 2;
 
-
-interface ProjectionChartProps {
-    readonly dimensions: Dimensions;
-    readonly data: Projections;
-}
 
 const createGroups = (rootG: RootSelection) => {
     rootG.append('g').attr("id", "circlesG").attr("clip-path", "url(#clip)");

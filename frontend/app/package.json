@@ -17,6 +17,7 @@
     "@types/react-redux": "^7.1.14",
     "comlink-loader": "^2.0.0",
     "d3": "^6.3.1",
+    "detect-browser": "^5.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-redux": "^7.2.2",

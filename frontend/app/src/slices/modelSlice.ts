@@ -3,7 +3,7 @@ import {RootState} from '../app/store';
 import * as tf from "@tensorflow/tfjs";
 import {getModel} from "../api/modelClient";
 import {getDatasetEndpoint} from "../api/common";
-import { Status } from '../types/data';
+import {Status} from '../types/data';
 
 
 interface ModelState {
@@ -17,7 +17,12 @@ const initialState = {
 } as ModelState;
 
 export const fetchModel = createAsyncThunk<tf.LayersModel, void, { state: RootState }>('model/fetchModel', async (arg, thunkAPI) => {
-    const endPoint = getDatasetEndpoint(thunkAPI.getState().data.name) + '';
+    const state = thunkAPI.getState();
+    const endPoint = getDatasetEndpoint(state.data.name) + '';
+
+    // Updates our weird worker state that lives outside of redux
+    // because the tooling for redux and workers is the worst.
+    state.projection.worker.getModel();
 
     return await getModel(endPoint);
 });

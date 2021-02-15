@@ -1,6 +1,6 @@
 import {createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState,} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../app/store';
-import {ProjectedInstance, Projection, Status} from "../types/data";
+import {BatchSize, PlotType, ProjectedInstance, Projection, Status} from "../types/data";
 import {fetchData, selectDataIds, selectFloatFeatureData} from "./dataSlice";
 import Worker from "../worker";
 import {selectModel} from "./modelSlice";
@@ -9,6 +9,8 @@ import {selectModel} from "./modelSlice";
 interface ProjectionState extends EntityState<ProjectedInstance> {
     projection: Projection;
     hyperparam: number;
+    batchSize: BatchSize;
+    plotType: PlotType;
     projectionStatus: Status;
     worker: Worker;
 }
@@ -21,6 +23,8 @@ const projectionAdapter = createEntityAdapter<ProjectedInstance>({
 const initialState = projectionAdapter.getInitialState({
     projection: 'umap',
     hyperparam: 5,
+    batchSize: 64,
+    plotType: 'svg',
     projectionStatus: 'idle',
     worker: new Worker()
 }) as ProjectionState;
@@ -32,6 +36,18 @@ export const updateHyperParamAndProject = (hyperparam: number) => {
     }
 }
 
+export const changeBatchSizeAndProject = (batchSize: BatchSize) => {
+    return (dispatch: AppDispatch) => {
+        return dispatch(changeBatchSize(batchSize)).then(() => dispatch(projectData()));
+    }
+}
+
+export const changeBatchSize = createAsyncThunk<BatchSize, BatchSize, { dispatch: AppDispatch, state: RootState, rejectValue: string }>('projection/changeBatchSize', async (arg, thunkAPI) => {
+    const state = thunkAPI.getState();
+    state.projection.worker.setBatchSize(arg);
+    return arg;
+});
+
 type ProjectionChanges = { changes: { projections: number[]; }; id: number; }[];
 
 export const projectData = createAsyncThunk<ProjectionChanges,
@@ -41,42 +57,23 @@ export const projectData = createAsyncThunk<ProjectionChanges,
         state: RootState,
         rejectValue: string
     }>('projection/projectData', async (arg, thunkAPI) => {
-    // console.log("did this at least start");
     const state = thunkAPI.getState();
     const model = selectModel(state);
     if (model !== undefined) {
-        const numFeatures = 785;
         const featureArray = selectRawFeatureData(state);
-        state.projection.worker.setNumFeatures(numFeatures);
         const predictions = await state.projection.worker.runProjection(featureArray);
         const ids = selectDataIds(state);
-        const changes = predictions.map((d: number[], i: number) => {
+        return predictions.map((d: number[], i: number) => {
             return {'changes': {'projections': d}, id: ids[i]}
         });
-        return changes;
-
-        // const ids = selectDataIds(state);
-        // const features = tf.tensor(featureArray);
-        // const features = tf.tensor(fa).reshape([-1, numFeatures]);
-        // console.log(features.shape);
-        // console.log("about to predict");
-
-        // const tfPredictions = (model.predict(features, {batchSize: 1024}) as tf.Tensor<tf.Rank.R2>);
-        // const predictions = await tfPredictions.array();
-        // const changes = predictions.map((d, i) => {
-        //     return {'changes': {'projections': d}, id: ids[i]}
-        // });
-        // tf.dispose(features);
-        // tf.dispose(tfPredictions);
-        // tf.dispose(predictions);
-        // console.log("it actually worked");
-        // return changes;
     } else {
         return thunkAPI.rejectWithValue("Model not defined");
     }
-}, {condition: (arg, api) => {
+}, {
+    condition: (arg, api) => {
         return api.getState().projection.projectionStatus !== 'pending'
-    }})
+    }
+})
 
 export const projectionSlice = createSlice({
     name: 'projection',
@@ -87,6 +84,12 @@ export const projectionSlice = createSlice({
         },
         updateHyperParam(state, action) {
             state.hyperparam = action.payload;
+        },
+        changeBatchSize(state, action) {
+            state.batchSize = action.payload;
+        },
+        changePlotType(state, action) {
+            state.plotType = action.payload;
         }
     },
     extraReducers: builder => {
@@ -112,10 +115,13 @@ export const projectionSlice = createSlice({
         builder.addCase(projectData.rejected, (state, action) => {
             state.projectionStatus = 'rejected'
         })
+        builder.addCase(changeBatchSize.fulfilled, (state, action) => {
+            state.batchSize = action.payload;
+        })
     }
 });
 
-export const {updateHyperParam, changeProjection} = projectionSlice.actions;
+export const {updateHyperParam, changeProjection, changePlotType} = projectionSlice.actions;
 
 const dataSelecters = projectionAdapter.getSelectors<RootState>(state => state.projection);
 
@@ -131,23 +137,38 @@ export const selectProjection = (state: RootState) => {
     return state.projection.projection;
 }
 
+export const selectBatchSize = (state: RootState) => {
+    return state.projection.batchSize;
+}
 
-const selectRawFeatureData = createSelector(
-    [selectFloatFeatureData, selectProjectionHyperparam],
-    (floatData, hyperparam) => {
+export const selectPlotType = (state: RootState) => {
+    return state.projection.plotType;
+}
+
+const selectSABFeatureData = createSelector(
+    [selectFloatFeatureData],
+    (floatData) => {
         const numFeatures = floatData[0].length;
         const sab = new SharedArrayBuffer(Float32Array.BYTES_PER_ELEMENT * floatData.length * numFeatures);
         const fa = new Float32Array(sab);
-
-        for (let i = 0; i < floatData.length; i++)
-        {
-            fa[(i*numFeatures)] = hyperparam;
-            for (let j = 1; j < numFeatures; j++)
-            {
-                fa[(i*numFeatures) + j] = floatData[i][j];
+        for (let i = 0; i < floatData.length; i++) {
+            for (let j = 0; j < numFeatures; j++) {
+                fa[(i * numFeatures) + j] = floatData[i][j];
             }
         }
         return fa;
+    }
+);
+
+
+const selectRawFeatureData = createSelector(
+    [selectSABFeatureData, selectProjectionHyperparam],
+    (floatData, hyperparam) => {
+        const numFeatures = 785;
+        for (let i = 0; i < floatData.length; i += numFeatures) {
+            floatData[i] = hyperparam;
+        }
+        return floatData;
     }
 );
 

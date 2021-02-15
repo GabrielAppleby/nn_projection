@@ -1,12 +1,9 @@
-import React from "react";
+import React, {ChangeEvent, useState} from "react";
 import {Slider, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {
-
-} from "../slices/dataSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
-import {projectData, selectProjectionHyperparam, updateHyperParam} from "../slices/projectionSlice";
+import {selectProjectionHyperparam, updateHyperParamAndProject} from "../slices/projectionSlice";
 
 
 const useStyles = makeStyles({
@@ -22,9 +19,9 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    updateHyperParam: (hyperparam: number) => dispatch(updateHyperParam(hyperparam)),
-    project: () => dispatch(projectData())
-    // updateHyperParamAndProject: (hyperparam: number) => dispatch(updateHyperParamAndProject(hyperparam))
+    // updateHyperParam: (hyperparam: number) => dispatch(updateHyperParam(hyperparam)),
+    // project: () => dispatch(projectData()),
+    updateHyperParamAndProject: (hyperparam: number) => dispatch(updateHyperParamAndProject(hyperparam))
 });
 
 const connector = connect(
@@ -34,12 +31,15 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
+interface Abortable extends Promise<any> {
+    abort: (reason?: string) => void;
+}
+
 const HyperparamSlider: React.FC<PropsFromRedux> = (props) => {
     const classes = useStyles();
+    const [projectPromise, setProjectPromise] = useState<Abortable | null>(null);
     const hyperparam = props.hyperparam;
-    const updateHyperParam = props.updateHyperParam;
-    const project = props.project;
-    // const updateHyperParamAndProject = props.updateHyperParamAndProject;
+    const updateHyperParamAndProject = props.updateHyperParamAndProject;
 
     return (
         <div className={classes.formItemDiv}>
@@ -50,15 +50,19 @@ const HyperparamSlider: React.FC<PropsFromRedux> = (props) => {
                 key={'hyperparam_slider'}
                 orientation="horizontal"
                 value={hyperparam}
-                onChange={(_, value) => {
+                onChange={(_: ChangeEvent<{}>, value: number | number[]) => {
                     if (typeof value === "number") {
-                        updateHyperParam(value);
-                        project();
+                        setProjectPromise(updateHyperParamAndProject(value));
                     }
                 }}
-                // onChangeCommitted={(_, value) => {
-                //     project();
-                // }}
+                onChangeCommitted={(_: ChangeEvent<{}>, value: number | number[]) => {
+                    if (typeof value === "number" && projectPromise !== null) {
+                        projectPromise.abort();
+                        projectPromise.then(() => {
+                            updateHyperParamAndProject(value);
+                        })
+                    }
+                }}
                 valueLabelDisplay="auto"
                 min={5.0}
                 max={45.0}
