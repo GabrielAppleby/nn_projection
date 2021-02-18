@@ -6,6 +6,7 @@ from flask_restful import fields, Resource, marshal_with
 
 from app.core.digit import Digit
 from app.dao.digits_dao import DigitDB
+from app.api.paginator import pagination
 
 
 class BytesField(fields.Raw):
@@ -26,14 +27,10 @@ digit_fields: Dict = {
 
 
 class DigitListAPI(Resource):
-    @marshal_with(digit_fields)
     def get(self) -> List[Digit]:
-        return DigitDB.query.all()
+        return pagination.paginate(DigitDB, digit_fields)
 
 
 class DigitAPI(Resource):
-    @marshal_with(digit_fields)
     def get(self, uid) -> Digit:
-        return DigitDB.query.get_or_404(uid)
-
-
+        return pagination.paginate(DigitDB.query.filter_by(uid=uid), digit_fields)

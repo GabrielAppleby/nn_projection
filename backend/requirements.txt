@@ -7,3 +7,4 @@ flask-restful
 psycopg2-binary
 Flask-SQLAlchemy
 Flask-Migrate
+flask-rest-paginate

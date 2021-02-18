@@ -1,17 +1,16 @@
 import React from "react";
 import {Select, Typography} from "@material-ui/core";
-import {selectProjection} from "../slices/projectionSlice";
+import {changePlotType, selectPlotType} from "../slices/projectionSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
-import {Projection} from "../types/data";
-import {changeProjectionAndFetchModel} from "../app/actions";
+import {PlotType} from "../types/data";
 
 const mapStateToProps = (state: RootState) => ({
-    projection: selectProjection(state),
+    plotType: selectPlotType(state),
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    changeProjectionAndFetchModel: (projection: Projection) => dispatch(changeProjectionAndFetchModel(projection)),
+    changePlotType: (plotType: PlotType) => dispatch(changePlotType(plotType)),
 });
 
 const connector = connect(
@@ -23,26 +22,27 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 
 const ProjectionPicker = (props: PropsFromRedux) => {
-    const selected = props.projection;
-    const changeSelection = props.changeProjectionAndFetchModel;
+    const selected = props.plotType;
+    const changeSelection = props.changePlotType;
 
 
     return (
         <>
-            <Typography id="projection-picker" gutterBottom>
-                Projection
+            <Typography id="plot-type" gutterBottom>
+                Plot Type
             </Typography>
             <Select
                 native
                 value={selected}
                 onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                    changeSelection(event.target.value as Projection);
+                    changeSelection(event.target.value as PlotType);
                 }}
                 inputProps={{
-                    name: 'projection',
-                    id: 'projection-native-simple',
+                    name: 'plottype',
+                    id: 'plottype-native-simple',
                 }}>
-                <option value={'umap'}>umap</option>
+                <option value={'svg'}>svg</option>
+                <option value={'webgl'}>webgl</option>
             </Select>
         </>
     );

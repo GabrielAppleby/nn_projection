@@ -1,6 +1,7 @@
 import {NumberTuples, UnknownTuples} from "../../types/charts";
-import {Data, ProjectedData} from "../../types/data";
 import * as d3 from "d3";
+import {Dimensions} from "../../wrappers/Dimensions";
+import {Projections} from "../../types/data";
 
 export const DOMAIN_EXTENT = [0, 1];
 export const COLORS = d3.scaleOrdinal(d3.schemeCategory10);
@@ -22,6 +23,7 @@ export function isNotNullish<T>(value: T): value is NonNullable<T> {
     return value !== undefined && value !== null;
 }
 
-export const isProjected = (x: Data): x is ProjectedData => {
-    return x[0] !== undefined && x[0].projections !== undefined;
+export interface ProjectionChartProps {
+    readonly dimensions: Dimensions;
+    readonly data: Projections;
 }

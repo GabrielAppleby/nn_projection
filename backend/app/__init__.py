@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_migrate import Migrate
 
 from app.api.digit_api import DigitListAPI, DigitAPI
+from app.api.paginator import pagination
 from app.api.tf_model_api import TFModelAPI, TFShardAPI
 from app.dao.database import db
 
@@ -19,7 +20,8 @@ def create_app() -> Flask:
     )
 
     db.init_app(app)
-    migrate = Migrate(app, db)
+    Migrate(app, db)
+    pagination.init_app(app, db)
 
     api: Api = Api(app, prefix='/api')
 
