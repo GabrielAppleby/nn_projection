@@ -4,14 +4,14 @@ import {selectProjection} from "../slices/projectionSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
 import {Projection} from "../types/data";
-import {changeProjectionAndFetchModel} from "../app/actions";
+import {changeProjectionFetchModelAndProject} from "../app/actions";
 
 const mapStateToProps = (state: RootState) => ({
     projection: selectProjection(state),
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    changeProjectionAndFetchModel: (projection: Projection) => dispatch(changeProjectionAndFetchModel(projection)),
+    changeProjectionAndFetchModel: (projection: Projection) => dispatch(changeProjectionFetchModelAndProject(projection)),
 });
 
 const connector = connect(
@@ -43,6 +43,7 @@ const ProjectionPicker = (props: PropsFromRedux) => {
                     id: 'projection-native-simple',
                 }}>
                 <option value={'umap'}>umap</option>
+                <option value={'tsne'}>tsne</option>
             </Select>
         </>
     );

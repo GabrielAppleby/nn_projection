@@ -4,9 +4,9 @@ from typing import Dict, List
 
 from flask_restful import fields, Resource
 
-from app.core.digit import Digit
-from app.dao.digits_dao import DigitDB
+from app.core.fashion import Fashion
 from app.api.paginator import pagination
+from app.dao.fashion_dao import FashionDB
 
 
 class BytesField(fields.Raw):
@@ -19,18 +19,18 @@ class BytesField(fields.Raw):
 #         return super().format(base64.b64encode(value))
 
 
-digit_fields: Dict = {
+fashion_fields: Dict = {
     "uid": fields.Integer,
     "label": fields.String,
     "features": BytesField
 }
 
 
-class DigitListAPI(Resource):
-    def get(self) -> List[Digit]:
-        return pagination.paginate(DigitDB, digit_fields)
+class FashionListAPI(Resource):
+    def get(self) -> List[Fashion]:
+        return pagination.paginate(FashionDB, fashion_fields)
 
 
-class DigitAPI(Resource):
-    def get(self, uid) -> Digit:
-        return pagination.paginate(DigitDB.query.filter_by(uid=uid), digit_fields)
+class FashionAPI(Resource):
+    def get(self, uid) -> Fashion:
+        return pagination.paginate(FashionDB.query.filter_by(uid=uid), fashion_fields)

@@ -1,5 +1,5 @@
-export type Dataset = 'mnist';
-export type Projection = 'umap'
+export type Dataset = 'digit' | 'fashion';
+export type Projection = 'umap' | 'tsne';
 export type Status = 'idle' | 'pending' | 'fulfilled' | 'rejected';
 export type DataSize = 500 | 1000 | 5000 | 10000 | 20000;
 export type BatchSize = 32 | 64 | 128 | 256 | 512 | 1024;

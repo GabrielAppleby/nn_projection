@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_migrate import Migrate
 
 from app.api.digit_api import DigitListAPI, DigitAPI
+from app.api.fashion_api import FashionListAPI, FashionAPI
 from app.api.paginator import pagination
 from app.api.tf_model_api import TFModelAPI, TFShardAPI
 from app.dao.database import db
@@ -27,9 +28,11 @@ def create_app() -> Flask:
 
     api.add_resource(DigitListAPI, '/digits')
     api.add_resource(DigitAPI, '/digits/<int:uid>')
+    api.add_resource(FashionListAPI, '/fashions')
+    api.add_resource(FashionAPI, '/fashions/<int:uid>')
 
-    api.add_resource(TFModelAPI, '/models/<string:dataset_name>')
-    api.add_resource(TFShardAPI, '/models/<string:dataset_name>/<string:file_name>')
+    api.add_resource(TFModelAPI, '/models/<string:projection_name>/<string:dataset_name>/')
+    api.add_resource(TFShardAPI, '/models/<string:projection_name>/<string:dataset_name>/<string:file_name>')
 
 
     @app.after_request

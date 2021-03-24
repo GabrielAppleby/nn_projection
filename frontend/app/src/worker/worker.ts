@@ -1,15 +1,19 @@
 import * as tf from "@tensorflow/tfjs";
-import {API_URL} from "../api/common";
+import {API_URL, getModelEndpoint} from "../api/common";
+import {Dataset, Projection} from "../types/data";
 
-let model: tf.LayersModel | null = null;
+let model: tf.GraphModel | null = null;
 let numFeatures = 0;
 let batchSize = 64;
+let dataset: Dataset = 'digit';
+let projection: Projection = 'umap';
 
 export async function getModel() {
     if (model !== null) {
         model.dispose();
     }
-    model = await tf.loadLayersModel(`${API_URL}/models/digit`);
+    const endPoint = getModelEndpoint(dataset, projection) + '';
+    model = await tf.loadGraphModel(`${API_URL}/models${endPoint}`);
 }
 
 export function setNumFeatures(data: number) {
@@ -18,6 +22,14 @@ export function setNumFeatures(data: number) {
 
 export function setBatchSize(data: number) {
     batchSize = data;
+}
+
+export function setDataset(data: Dataset) {
+    dataset = data;
+}
+
+export function setProjection(data: Projection) {
+    projection = data;
 }
 
 export async function runProjection(data: Float32Array) {

@@ -7,7 +7,6 @@ import {webgl_support} from "./utils";
 
 
 function App() {
-
     const [isSupported, setIsSupported] = useState(false);
 
     useEffect(() => {
@@ -38,7 +37,7 @@ function App() {
         return (
             <>
                 <h1>Sorry.. only newer versions of Chrome are supported.</h1>
-                <h2>If you are using Chrome > version 87 please ensure webgl is enabled.</h2>
+                <h2>If you are using Chrome ge version 87 please ensure webgl is enabled.</h2>
             </>
         );
     }

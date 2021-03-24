@@ -48,6 +48,12 @@ export const changeBatchSize = createAsyncThunk<BatchSize, BatchSize, { dispatch
     return arg;
 });
 
+export const changeProjection = createAsyncThunk<Projection, Projection, { dispatch: AppDispatch, state: RootState, rejectValue: string }>('projection/changeProjection', async (arg, thunkAPI) => {
+    const state = thunkAPI.getState();
+    state.projection.worker.setProjection(arg);
+    return arg;
+});
+
 type ProjectionChanges = { changes: { projections: number[]; }; id: number; }[];
 
 export const projectData = createAsyncThunk<ProjectionChanges,
@@ -79,14 +85,8 @@ export const projectionSlice = createSlice({
     name: 'projection',
     initialState,
     reducers: {
-        changeProjection(state, action) {
-            state.projection = action.payload;
-        },
         updateHyperParam(state, action) {
             state.hyperparam = action.payload;
-        },
-        changeBatchSize(state, action) {
-            state.batchSize = action.payload;
         },
         changePlotType(state, action) {
             state.plotType = action.payload;
@@ -118,10 +118,13 @@ export const projectionSlice = createSlice({
         builder.addCase(changeBatchSize.fulfilled, (state, action) => {
             state.batchSize = action.payload;
         })
+        builder.addCase(changeProjection.fulfilled, (state, action) => {
+            state.projection = action.payload;
+        })
     }
 });
 
-export const {updateHyperParam, changeProjection, changePlotType} = projectionSlice.actions;
+export const {updateHyperParam, changePlotType} = projectionSlice.actions;
 
 const dataSelecters = projectionAdapter.getSelectors<RootState>(state => state.projection);
 

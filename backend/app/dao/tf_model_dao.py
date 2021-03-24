@@ -10,8 +10,9 @@ DAO_FOLDER: str = os.path.dirname(os.path.realpath(__file__))
 class TFModelDB:
 
     @staticmethod
-    def get_or_404(dataset_name):
-        model_path = os.path.join(DAO_FOLDER, 'tf_models', dataset_name, 'model.json')
+    def get_or_404(projection_name, dataset_name):
+        model_path = os.path.join(
+            DAO_FOLDER, 'tf_models', projection_name, dataset_name, 'model.json')
         with open(model_path, 'r') as model:
             if model is None:
                 abort(404)
@@ -21,6 +22,6 @@ class TFModelDB:
 class TFShardDB:
 
     @staticmethod
-    def get_or_404(dataset_name, file_name):
-        shard_path = os.path.join(DAO_FOLDER, 'tf_models', dataset_name)
+    def get_or_404(projection_name, dataset_name, file_name):
+        shard_path = os.path.join(DAO_FOLDER, 'tf_models', projection_name, dataset_name)
         return send_from_directory(shard_path, file_name)

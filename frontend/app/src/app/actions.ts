@@ -1,7 +1,7 @@
 import {AppDispatch} from "./store";
-import {changeDataSize, fetchData} from "../slices/dataSlice";
+import {changeDataset, changeDataSize, fetchData} from "../slices/dataSlice";
 import {fetchModel} from "../slices/modelSlice";
-import {DataSize, Projection} from "../types/data";
+import {Dataset, DataSize, Projection} from "../types/data";
 import {changeProjection, projectData} from "../slices/projectionSlice";
 
 export const initApp = () => {
@@ -12,10 +12,23 @@ export const initApp = () => {
     }
 }
 
-export const changeProjectionAndFetchModel = (projection: Projection) => {
+export const changeProjectionFetchModelAndProject = (projection: Projection) => {
     return (dispatch: AppDispatch) => {
-        dispatch(changeProjection(projection))
-        return dispatch(fetchModel())
+        dispatch(changeProjection(projection)).then(() => {
+            return dispatch(fetchModel()).then(() => {
+                return dispatch(projectData());
+            });
+        })
+    }
+}
+
+export const changeDatasetFetchDataFetchModelAndProject = (dataset: Dataset) => {
+    return (dispatch: AppDispatch) => {
+        dispatch(changeDataset(dataset)).then(() => {
+            return Promise.all([dispatch(fetchData()), dispatch(fetchModel())]).then(() => {
+                return dispatch(projectData());
+            });
+        })
     }
 }
 

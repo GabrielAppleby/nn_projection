@@ -17,7 +17,7 @@ const dataAdapter = createEntityAdapter<DataInstance>({
 });
 
 const initialState = dataAdapter.getInitialState({
-    name: "mnist",
+    name: "digit",
     dataSize: 500,
     dataStatus: 'idle',
 }) as DataState;
@@ -37,6 +37,12 @@ export const fetchData = createAsyncThunk<Data, void, { state: RootState }>('dat
     return data;
 });
 
+export const changeDataset = createAsyncThunk<Dataset, Dataset, { dispatch: AppDispatch, state: RootState, rejectValue: string }>('projection/changeDataset', async (arg, thunkAPI) => {
+    const state = thunkAPI.getState();
+    state.projection.worker.setDataset(arg);
+    return arg;
+});
+
 export const changeDatasetAndFetchData = (dataset: Dataset) => {
     return (dispatch: AppDispatch) => {
         dispatch(changeDataset(dataset))
@@ -48,9 +54,6 @@ export const dataSlice = createSlice({
     name: 'data',
     initialState,
     reducers: {
-        changeDataset(state, action) {
-            state.name = action.payload;
-        },
         changeDataSize(state, action) {
             state.dataSize = action.payload;
         }
@@ -67,10 +70,13 @@ export const dataSlice = createSlice({
         builder.addCase(fetchData.rejected, (state, action) => {
             state.dataStatus = 'rejected'
         })
+        builder.addCase(changeDataset.fulfilled, (state, action) => {
+            state.name = action.payload;
+        })
     }
 });
 
-export const {changeDataset, changeDataSize} = dataSlice.actions;
+export const {changeDataSize} = dataSlice.actions;
 
 const dataSelecters = dataAdapter.getSelectors<RootState>(state => state.data);
 

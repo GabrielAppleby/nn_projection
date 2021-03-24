@@ -1,16 +1,17 @@
 import React from "react";
 import {Select, Typography} from "@material-ui/core";
-import {changeDatasetAndFetchData, selectDataset} from "../slices/dataSlice";
+import {selectDataset} from "../slices/dataSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
 import {Dataset} from "../types/data";
+import {changeDatasetFetchDataFetchModelAndProject} from "../app/actions";
 
 const mapStateToProps = (state: RootState) => ({
     dataset: selectDataset(state),
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    changeDataset: (name: Dataset) => dispatch(changeDatasetAndFetchData(name)),
+    changeDataset: (name: Dataset) => dispatch(changeDatasetFetchDataFetchModelAndProject(name)),
 });
 
 const connector = connect(
@@ -41,7 +42,8 @@ const DatasetPicker = (props: PropsFromRedux) => {
                     name: 'dataset',
                     id: 'dataset-native-simple',
                 }}>
-                <option value={'mnist'}>mnist</option>
+                <option value={'digit'}>digit</option>
+                <option value={'fashion'}>fashion</option>
             </Select>
         </>
     );

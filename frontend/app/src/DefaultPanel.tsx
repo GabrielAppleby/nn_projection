@@ -3,7 +3,6 @@ import {connect, ConnectedProps, useDispatch} from "react-redux";
 import React, {useEffect} from "react";
 import {DefaultAppBar} from "./components/DefaultAppBar";
 import {Grid} from "@material-ui/core";
-import ResponsiveScatterChartGL from "./components/charts/ScatterChartGL";
 import ResponsiveScatterChart from "./components/charts/ScatterChart";
 import HyperparamSlider from "./components/HyperparamSlider";
 import DatasetPicker from "./components/DatasetPicker";
@@ -17,6 +16,7 @@ import {RootState} from "./app/store";
 import {selectFetchStatus} from "./slices/dataSlice";
 import {selectPlotType} from "./slices/projectionSlice";
 import PlotTypePicker from "./components/PlotTypePicker";
+import ResponsiveScatterChartCanvas from "./components/charts/ScatterChartCanvas";
 
 
 const useStyles = makeStyles({
@@ -70,7 +70,7 @@ const DefaultPanel = ({fetchStatus, plotType}: PropsFromRedux) => {
 
     let mainDisplay = <ResponsiveLoadingDisplay/>;
     if (fetchStatus === 'fulfilled') {
-        mainDisplay = plotType === 'webgl' ? <ResponsiveScatterChartGL/> : <ResponsiveScatterChart/>;
+        mainDisplay = plotType === 'webgl' ? <ResponsiveScatterChartCanvas/> : <ResponsiveScatterChart/>;
     }
 
     return (

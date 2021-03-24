@@ -2,12 +2,12 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../app/store';
 import * as tf from "@tensorflow/tfjs";
 import {getModel} from "../api/modelClient";
-import {getDatasetEndpoint} from "../api/common";
+import {getModelEndpoint} from "../api/common";
 import {Status} from '../types/data';
 
 
 interface ModelState {
-    model?: tf.LayersModel;
+    model?: tf.GraphModel;
     modelStatus: Status;
 }
 
@@ -16,13 +16,13 @@ const initialState = {
     modelStatus: 'idle'
 } as ModelState;
 
-export const fetchModel = createAsyncThunk<tf.LayersModel, void, { state: RootState }>('model/fetchModel', async (arg, thunkAPI) => {
+export const fetchModel = createAsyncThunk<tf.GraphModel, void, { state: RootState }>('model/fetchModel', async (arg, thunkAPI) => {
     const state = thunkAPI.getState();
-    const endPoint = getDatasetEndpoint(state.data.name) + '';
+    const endPoint = getModelEndpoint(state.data.name, state.projection.projection) + '';
 
     // Updates our weird worker state that lives outside of redux
     // because the tooling for redux and workers is the worst.
-    state.projection.worker.getModel();
+    await state.projection.worker.getModel();
 
     return await getModel(endPoint);
 });
