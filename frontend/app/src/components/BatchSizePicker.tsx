@@ -1,16 +1,24 @@
-import React from "react";
-import {Select, Typography} from "@material-ui/core";
+import React, {ChangeEvent} from "react";
+import {Slider, Typography} from "@material-ui/core";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
-import {BATCH_SIZES, BatchSize} from "../types/data";
 import {changeBatchSizeAndProject, selectBatchSize} from "../slices/projectionSlice";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+    formItemDiv: {
+        height: "100%",
+        margin: "auto",
+        textAlign: "center"
+    }
+});
 
 const mapStateToProps = (state: RootState) => ({
     batchSize: selectBatchSize(state),
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    changeBatchSizeAndProject: (name: BatchSize) => dispatch(changeBatchSizeAndProject(name)),
+    changeBatchSizeAndProject: (name: number) => dispatch(changeBatchSizeAndProject(name)),
 });
 
 const connector = connect(
@@ -21,33 +29,31 @@ const connector = connect(
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 
-const BatchSizePicker = (props: PropsFromRedux) => {
+const BatchSizeSlider: React.FC<PropsFromRedux> = (props) => {
+    const classes = useStyles();
     const selected = props.batchSize;
     const changeSelection = props.changeBatchSizeAndProject;
 
-
     return (
-        <>
-            <Typography id="dataset-picker" gutterBottom>
+        <div className={classes.formItemDiv}>
+            <Typography id="hyperparam-slider" gutterBottom>
                 Batch Size
             </Typography>
-            <Select
-                native
+            <Slider
+                key={'hyperparam_slider'}
+                orientation="horizontal"
                 value={selected}
-                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                    changeSelection(parseInt(event.target.value as string) as BatchSize);
+                onChange={(_: ChangeEvent<{}>, value: number | number[]) => {
+                    if (typeof value === "number") {
+                        changeSelection(value);
+                    }
                 }}
-                inputProps={{
-                    name: 'batchsize',
-                    id: 'batchsize-native-simple',
-                }}>
-                {BATCH_SIZES.map((size) => {
-                    return <option key={size.toString()} value={size}>{size}</option>
-                })
-                }
-            </Select>
-        </>
+                valueLabelDisplay="auto"
+                min={32}
+                max={20000}
+                step={32}/>
+        </div>
     );
 }
 
-export default connector(BatchSizePicker);
+export default connector(BatchSizeSlider);

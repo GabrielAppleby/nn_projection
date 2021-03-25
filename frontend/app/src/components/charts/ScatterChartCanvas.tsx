@@ -8,7 +8,7 @@ import {COLORS, ProjectionChartProps} from "./common";
 import {connect} from "react-redux";
 import {selectAllProjections} from "../../slices/projectionSlice";
 import * as twgl from "twgl.js"
-import {ProgramInfo} from "twgl.js";
+import {ProgramInfo} from "twgl.js"
 
 
 const getExtrema = (data: Projections) => {
@@ -31,7 +31,7 @@ const vertexShaderSource = `
     vec2 clipSpace = zeroToTwo - 1.0;
  
     gl_Position = vec4(clipSpace, 0, 1);
-    gl_PointSize = 2.0;
+    gl_PointSize = 3.0;
     
     v_color = vec4(a_color / 255.0, 1.0);
   }
@@ -60,8 +60,7 @@ const ScatterChartCanvas: React.FC<ProjectionChartProps> = (props) => {
         if (d3Container.current !== null) {
             const tempCanvas = d3Container.current;
             const tempGL = twgl.getContext(tempCanvas);
-            if (tempGL !== null)
-            {
+            if (tempGL !== null) {
                 setCanvas(tempCanvas);
                 setGl(tempGL);
                 setProgramInfo(twgl.createProgramInfo(tempGL, [vertexShaderSource, fragmentShaderSource]));

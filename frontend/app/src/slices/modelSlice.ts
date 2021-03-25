@@ -35,6 +35,7 @@ export const modelSlice = createSlice({
             if (state.model !== undefined) {
                 state.model.dispose();
             }
+            state.model = undefined;
         }
     },
     extraReducers: builder => {

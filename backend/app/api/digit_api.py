@@ -1,12 +1,11 @@
-import numpy as np
-
 from typing import Dict, List
 
+import numpy as np
 from flask_restful import fields, Resource
 
+from app.api.paginator import pagination
 from app.core.digit import Digit
 from app.dao.digits_dao import DigitDB
-from app.api.paginator import pagination
 
 
 class BytesField(fields.Raw):

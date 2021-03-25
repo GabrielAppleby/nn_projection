@@ -19,8 +19,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    // updateHyperParam: (hyperparam: number) => dispatch(updateHyperParam(hyperparam)),
-    // project: () => dispatch(projectData()),
     updateHyperParamAndProject: (hyperparam: number) => dispatch(updateHyperParamAndProject(hyperparam))
 });
 
@@ -64,8 +62,8 @@ const HyperparamSlider: React.FC<PropsFromRedux> = (props) => {
                     }
                 }}
                 valueLabelDisplay="auto"
-                min={5.0}
-                max={45.0}
+                min={2.0}
+                max={50.0}
                 step={1.0}/>
         </div>
     );

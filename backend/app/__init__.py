@@ -1,8 +1,8 @@
 import os
 
 from flask import Flask
-from flask_restful import Api
 from flask_migrate import Migrate
+from flask_restful import Api
 
 from app.api.digit_api import DigitListAPI, DigitAPI
 from app.api.fashion_api import FashionListAPI, FashionAPI
@@ -31,9 +31,9 @@ def create_app() -> Flask:
     api.add_resource(FashionListAPI, '/fashions')
     api.add_resource(FashionAPI, '/fashions/<int:uid>')
 
-    api.add_resource(TFModelAPI, '/models/<string:projection_name>/<string:dataset_name>/')
-    api.add_resource(TFShardAPI, '/models/<string:projection_name>/<string:dataset_name>/<string:file_name>')
-
+    api.add_resource(TFModelAPI, '/models/<string:projection_name>/<string:dataset_name>')
+    api.add_resource(TFShardAPI,
+                     '/models/<string:projection_name>/<string:dataset_name>/<string:file_name>')
 
     @app.after_request
     def after_request(response):

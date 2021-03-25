@@ -1,6 +1,6 @@
 import {createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState,} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../app/store';
-import {BatchSize, PlotType, ProjectedInstance, Projection, Status} from "../types/data";
+import {PlotType, ProjectedInstance, Projection, Status} from "../types/data";
 import {fetchData, selectDataIds, selectFloatFeatureData} from "./dataSlice";
 import Worker from "../worker";
 import {selectModel} from "./modelSlice";
@@ -9,7 +9,7 @@ import {selectModel} from "./modelSlice";
 interface ProjectionState extends EntityState<ProjectedInstance> {
     projection: Projection;
     hyperparam: number;
-    batchSize: BatchSize;
+    batchSize: number;
     plotType: PlotType;
     projectionStatus: Status;
     worker: Worker;
@@ -36,13 +36,13 @@ export const updateHyperParamAndProject = (hyperparam: number) => {
     }
 }
 
-export const changeBatchSizeAndProject = (batchSize: BatchSize) => {
+export const changeBatchSizeAndProject = (batchSize: number) => {
     return (dispatch: AppDispatch) => {
         return dispatch(changeBatchSize(batchSize)).then(() => dispatch(projectData()));
     }
 }
 
-export const changeBatchSize = createAsyncThunk<BatchSize, BatchSize, { dispatch: AppDispatch, state: RootState, rejectValue: string }>('projection/changeBatchSize', async (arg, thunkAPI) => {
+export const changeBatchSize = createAsyncThunk<number, number, { dispatch: AppDispatch, state: RootState, rejectValue: string }>('projection/changeBatchSize', async (arg, thunkAPI) => {
     const state = thunkAPI.getState();
     state.projection.worker.setBatchSize(arg);
     return arg;
