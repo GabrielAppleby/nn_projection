@@ -34,10 +34,12 @@ export function setProjection(data: Projection) {
 
 export async function runProjection(data: Float32Array) {
     if (model !== null && numFeatures !== 0) {
-        const features = tf.tensor(data).reshape([-1, numFeatures]);
-        const tfPredictions = (model.predict(features, {batchSize: batchSize}) as tf.Tensor<tf.Rank.R2>);
+        const features = tf.tensor(data);
+        const reshaped = features.reshape([-1, numFeatures]);
+        const tfPredictions = (model.predict(reshaped, {batchSize: batchSize}) as tf.Tensor<tf.Rank.R2>);
         const predictions = await tfPredictions.array();
         tf.dispose(features);
+        tf.dispose(reshaped);
         tf.dispose(tfPredictions);
 
         return predictions;
