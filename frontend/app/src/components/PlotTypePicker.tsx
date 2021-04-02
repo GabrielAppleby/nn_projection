@@ -1,5 +1,5 @@
 import React from "react";
-import {Select, Typography} from "@material-ui/core";
+import {Select, Tooltip, Typography} from "@material-ui/core";
 import {changePlotType, selectPlotType} from "../slices/projectionSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
@@ -28,9 +28,11 @@ const ProjectionPicker = (props: PropsFromRedux) => {
 
     return (
         <>
-            <Typography id="plot-type" gutterBottom>
-                Plot Type
-            </Typography>
+            <Tooltip title={'How to render the plot.'} placement={"top"} arrow>
+                <Typography id="plot-type" gutterBottom>
+                    Rendering
+                </Typography>
+            </Tooltip>
             <Select
                 native
                 value={selected}
@@ -41,8 +43,8 @@ const ProjectionPicker = (props: PropsFromRedux) => {
                     name: 'plottype',
                     id: 'plottype-native-simple',
                 }}>
-                <option value={'svg'}>svg</option>
-                <option value={'webgl'}>webgl</option>
+                <option value={'svg'}>SVG</option>
+                <option value={'webgl'}>WebGL</option>
             </Select>
         </>
     );

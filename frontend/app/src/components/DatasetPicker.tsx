@@ -1,5 +1,5 @@
 import React from "react";
-import {Select, Typography} from "@material-ui/core";
+import {Select, Tooltip, Typography} from "@material-ui/core";
 import {selectDataset} from "../slices/dataSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
@@ -29,9 +29,11 @@ const DatasetPicker = (props: PropsFromRedux) => {
 
     return (
         <>
-            <Typography id="dataset-picker" gutterBottom>
-                Dataset
-            </Typography>
+            <Tooltip title={"The data set to project."} placement={"top"} arrow>
+                <Typography id="dataset-picker" gutterBottom>
+                    Data set
+                </Typography>
+            </Tooltip>
             <Select
                 native
                 value={selected}
@@ -42,8 +44,8 @@ const DatasetPicker = (props: PropsFromRedux) => {
                     name: 'dataset',
                     id: 'dataset-native-simple',
                 }}>
-                <option value={'digit'}>digit</option>
-                <option value={'fashion'}>fashion</option>
+                <option value={'digit'}>MNIST</option>
+                <option value={'fashion'}>FashionMNIST</option>
             </Select>
         </>
     );

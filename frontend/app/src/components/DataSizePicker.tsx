@@ -1,5 +1,5 @@
 import React from "react";
-import {Select, Typography} from "@material-ui/core";
+import {Select, Tooltip, Typography} from "@material-ui/core";
 import {selectDataSize} from "../slices/dataSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
@@ -29,9 +29,11 @@ const DataSizePicker = (props: PropsFromRedux) => {
 
     return (
         <>
-            <Typography id="dataset-picker" gutterBottom>
-                Data Size
-            </Typography>
+            <Tooltip title={'The number of instances to project.'} placement={"top"} arrow>
+                <Typography id="dataset-picker" gutterBottom>
+                    Data Size
+                </Typography>
+            </Tooltip>
             <Select
                 native
                 value={selected}

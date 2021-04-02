@@ -1,5 +1,5 @@
 import React from "react";
-import {Select, Typography} from "@material-ui/core";
+import {Select, Tooltip, Typography} from "@material-ui/core";
 import {selectProjection} from "../slices/projectionSlice";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
@@ -29,9 +29,11 @@ const ProjectionPicker = (props: PropsFromRedux) => {
 
     return (
         <>
-            <Typography id="projection-picker" gutterBottom>
-                Projection
-            </Typography>
+            <Tooltip title={'The projection technique to mimic.'} placement={"top"} arrow>
+                <Typography id="projection-picker" gutterBottom>
+                    Projection
+                </Typography>
+            </Tooltip>
             <Select
                 native
                 value={selected}
@@ -42,8 +44,8 @@ const ProjectionPicker = (props: PropsFromRedux) => {
                     name: 'projection',
                     id: 'projection-native-simple',
                 }}>
-                <option value={'umap'}>umap</option>
-                <option value={'tsne'}>tsne</option>
+                <option value={'umap'}>UMAP</option>
+                <option value={'tsne'}>t-SNE</option>
             </Select>
         </>
     );

@@ -36,8 +36,8 @@ function App() {
     if (!isSupported) {
         return (
             <>
-                <h1>Sorry.. only newer versions of Chrome are supported.</h1>
-                <h2>If you are using Chrome ge version 87 please ensure webgl is enabled.</h2>
+                <h1>This website requires Chrome. Only version 87 or greater is supported.</h1>
+                <h2>If you are using Chrome version 87 or greater please ensure WebGL is enabled.</h2>
             </>
         );
     }

@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from "react";
-import {Slider, Typography} from "@material-ui/core";
+import {Slider, Tooltip, Typography} from "@material-ui/core";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
 import {changeBatchSizeAndProject, selectBatchSize} from "../slices/projectionSlice";
@@ -36,9 +36,13 @@ const BatchSizeSlider: React.FC<PropsFromRedux> = (props) => {
 
     return (
         <div className={classes.formItemDiv}>
-            <Typography id="hyperparam-slider" gutterBottom>
-                Batch Size
-            </Typography>
+            <Tooltip
+                title={'The batch size for inference. Higher numbers can result in higher throughput on capable hardware.'}
+                placement={"top"} arrow>
+                <Typography id="hyperparam-slider" gutterBottom>
+                    Batch Size
+                </Typography>
+            </Tooltip>
             <Slider
                 key={'hyperparam_slider'}
                 orientation="horizontal"

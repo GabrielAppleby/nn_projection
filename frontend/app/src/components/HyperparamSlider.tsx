@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from "react";
-import {Slider, Typography} from "@material-ui/core";
+import {Slider, Tooltip, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {connect, ConnectedProps} from "react-redux";
 import {AppDispatch, RootState} from "../app/store";
@@ -41,9 +41,13 @@ const HyperparamSlider: React.FC<PropsFromRedux> = (props) => {
 
     return (
         <div className={classes.formItemDiv}>
-            <Typography id="hyperparam-slider" gutterBottom>
-                Hyperparam
-            </Typography>
+            <Tooltip
+                title={'The hyperparameter value for the chosen projection method. Either perplexity (for t-SNE) or number of neighbors (for UMAP).'}
+                placement={"top"} arrow>
+                <Typography id="hyperparam-slider" gutterBottom>
+                    Hyperparameter
+                </Typography>
+            </Tooltip>
             <Slider
                 key={'hyperparam_slider'}
                 orientation="horizontal"
